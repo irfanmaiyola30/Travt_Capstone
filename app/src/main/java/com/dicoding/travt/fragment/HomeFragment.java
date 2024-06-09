@@ -107,7 +107,7 @@ public class HomeFragment extends Fragment {
             // Memperbarui lokasi secara periodik
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
         } else {
-            // Meminta izin lokasi kepada pengguna jika belum disetujui
+            // Meminta izin jika lokasi belum di setujui
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
