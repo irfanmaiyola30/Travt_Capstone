@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "113331672186",
+    "project_id": "travt-11979",
+    "storage_bucket": "travt-11979.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113331672186:android:cf76a99641bd779a6117c3",
+        "android_client_info": {
+          "package_name": "com.dicoding.travt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9tsBwRNBJn1fYxsC7tIc8x45KWsfWZFk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

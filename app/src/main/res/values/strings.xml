@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Travt</string>
+    <string name="get_started_text">Show your\n responsibility\n towards society</string>
+    <string name="forgot_password_msg">Don\'t worry! it happens. Please enter the email address associated with your account.</string>
+    <string name="on_submit_msg">Check out your mailbox, you will receive an email containing link where you can reset your password</string>
+    <string name="default_web_client_id">AIzaSyDIL1xE0PamTnREBwQgkkbeUu99E0wx8FA</string>
+    <string name="home">Home</string>
+    <string name="travt">Travt</string>
+    <string name="food">Food</string>
+    <string name="favorit">Favorit</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
