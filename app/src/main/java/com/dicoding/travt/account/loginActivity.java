@@ -14,12 +14,25 @@ import android.widget.Toast;
 
 import com.dicoding.travt.MainActivity;
 import com.dicoding.travt.R;
-import com.dicoding.travt.account.registerActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class loginActivity extends AppCompatActivity {
 
@@ -37,6 +50,7 @@ public class loginActivity extends AppCompatActivity {
         initView();
         keRegis();
         loginn();
+        sendCredentialsToServer();
         setupForgotPassword();
     }
 
@@ -109,4 +123,77 @@ public class loginActivity extends AppCompatActivity {
         password = findViewById(R.id.passwordEditText);
         forgotPassword = findViewById(R.id.forgotPasswordTextView);
     }
+    private void sendCredentialsToServer() {
+        OkHttpClient client = new OkHttpClient();
+
+        // Membuat JSON Object untuk dikirim ke server
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("email", email); // Mengambil email dari variabel class
+            jsonBody.put("password", password); // Mengambil password dari variabel class
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(loginActivity.this, "Error: Gagal membuat JSON Object.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Membuat request body dari JSON Object
+        RequestBody requestBody = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+
+        // Membuat request untuk mengirim data ke server
+        Request request = new Request.Builder()
+                .url("http://34.101.192.36:3000/login") // Ganti dengan URL endpoint API Anda
+                .post(requestBody)
+                .build();
+
+        // Mengirim request ke server secara asynchronous
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(loginActivity.this, "Gagal terhubung ke server. Periksa koneksi internet anda.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    try {
+                        JSONObject jsonObject = new JSONObject(responseData);
+                        final String uid = jsonObject.getString("uid");
+
+                        // Menampilkan pesan Toast di UI thread
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(loginActivity.this, "Login berhasil dengan UID: " + uid, Toast.LENGTH_SHORT).show();
+                                reloada(); // Pindah ke MainActivity atau handle kegiatan setelah login berhasil
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(loginActivity.this, "Error: Gagal parsing response JSON.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(loginActivity.this, "Login gagal. Periksa kembali email atau password Anda.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.dicoding.travt.fragment;
+package com.dicoding.travt;
 
 import android.Manifest;
 import android.content.Context;
@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,14 +28,12 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.dicoding.travt.AllFragment;
-import com.dicoding.travt.PopulerFragment;
 import com.dicoding.travt.R;
-import com.dicoding.travt.RecomendedFragment;
 import com.dicoding.travt.api.ApiCaller;
 import com.dicoding.travt.api.DataAdapter;
 import com.dicoding.travt.api.HorizontalDataAdapter;
 import com.dicoding.travt.fragment.DetailFragment;
+import com.dicoding.travt.fragment.LihatSemuaFragment;
 import com.google.common.reflect.TypeToken;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,7 +54,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class HomeFragment extends Fragment {
+public class AllFragment extends Fragment {
 
     private TextView locationTextView;
     private Geocoder geocoder;
@@ -64,12 +64,14 @@ public class HomeFragment extends Fragment {
     private HorizontalDataAdapter horizontalDataAdapter; // Adapter untuk RecyclerView horizontal
     private OkHttpClient client;
     private Gson gson;
+    private EditText searchBar;
+
     private TextView seeAllTextView;
     private TextView allTextView;
     private TextView PopulerTextView;
     private TextView RecomemendedTextView;
 
-    public HomeFragment() {
+    public AllFragment() {
         // Diperlukan konstruktor kosong
     }
 
@@ -77,11 +79,12 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate layout untuk fragmen ini
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_all, container, false);
 
         // Inisialisasi tampilan
         locationTextView = rootView.findViewById(R.id.location);
-        PopulerTextView = rootView.findViewById(R.id.tab_populer);
+        searchBar = rootView.findViewById(R.id.search_bar);
+        PopulerTextView =rootView.findViewById(R.id.tab_populer);
         RecomemendedTextView = rootView.findViewById(R.id.tab_recomended);
         seeAllTextView = rootView.findViewById(R.id.see_all);
         allTextView = rootView.findViewById(R.id.tab_all);
@@ -103,23 +106,14 @@ public class HomeFragment extends Fragment {
                 transaction.commit();
             }
         });
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            String uid = currentUser.getUid();
-            ApiCaller.fetchApiData(uid, new ApiCaller.ApiCallback() {
-                @Override
-                public void onSuccess(ApiCaller.ApiResponse apiResponse) {
-                    // Tangani respons sukses
-                }
+        searchBar.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                performSearch(searchBar.getText().toString());
+                return true;
+            }
+            return false;
+        });
 
-                @Override
-                public void onFailure(IOException e) {
-                    // Tangani kegagalan
-                }
-            });
-        } else {
-            // Tangani kasus di mana pengguna tidak login
-        }
         PopulerTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,14 +174,27 @@ public class HomeFragment extends Fragment {
         // Inisialisasi OkHttpClient dan Gson dengan SubtypesDeserializer
         client = new OkHttpClient();
         gson = new GsonBuilder()
-                .registerTypeAdapter(new TypeToken<List<String>>() {
-                }.getType(), new LihatSemuaFragment.SubtypesDeserializer())
+                .registerTypeAdapter(new TypeToken<List<String>>(){}.getType(), new SubtypesDeserializer())
                 .create();
 
         // Panggil fungsi untuk mengambil data
         fetchData();
 
         return rootView;
+    }
+
+    private void performSearch(String query) {
+        // Filter data berdasarkan query
+        List<ApiCaller.Data> filteredList = new ArrayList<>();
+        for (ApiCaller.Data data : verticalDataAdapter.getData()) {
+            // Sesuaikan dengan kriteria pencarian Anda
+            if (data.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(data);
+            }
+        }
+
+        // Update adapter dengan data yang sudah difilter
+        verticalDataAdapter.filterList(filteredList);
     }
 
     private final LocationListener locationListener = new LocationListener() {
@@ -198,16 +205,13 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
 
         @Override
-        public void onProviderEnabled(String provider) {
-        }
+        public void onProviderEnabled(String provider) {}
 
         @Override
-        public void onProviderDisabled(String provider) {
-        }
+        public void onProviderDisabled(String provider) {}
     };
 
     private void displayLocation(Location location) {
@@ -309,18 +313,18 @@ public class HomeFragment extends Fragment {
 
 
     // Inner class for deserializing subtypes field
-            class SubtypesDeserializer implements JsonDeserializer<List<String>> {
-                @Override
-                public List<String> deserialize(JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) throws JsonParseException {
-                    List<String> subtypes = new ArrayList<>();
-                    if (json.isJsonArray()) {
-                        for (JsonElement element : json.getAsJsonArray()) {
-                            subtypes.add(element.getAsString());
-                        }
-                    } else if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
-                        subtypes.add(json.getAsString());
-                    }
-                    return subtypes;
+    class SubtypesDeserializer implements JsonDeserializer<List<String>> {
+        @Override
+        public List<String> deserialize(JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) throws JsonParseException {
+            List<String> subtypes = new ArrayList<>();
+            if (json.isJsonArray()) {
+                for (JsonElement element : json.getAsJsonArray()) {
+                    subtypes.add(element.getAsString());
                 }
+            } else if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
+                subtypes.add(json.getAsString());
             }
+            return subtypes;
+        }
     }
+}

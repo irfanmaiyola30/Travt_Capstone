@@ -9,5 +9,6 @@
     <string name="food">Food</string>
     <string name="favorit">Favorit</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="preference_file_key">user_prefs</string>
 
 </resources>

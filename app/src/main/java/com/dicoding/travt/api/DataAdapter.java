@@ -57,6 +57,10 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         return dataList.size();
     }
 
+    public Iterable<? extends ApiCaller.Data> getData() {
+        return null;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, city, rating;
         ImageView photo, starIcon;
@@ -69,6 +73,10 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             photo = itemView.findViewById(R.id.photo);
             starIcon = itemView.findViewById(R.id.star_icon);
         }
+    }
+    public void filterList(List<ApiCaller.Data> filteredList) {
+        dataList = filteredList;
+        notifyDataSetChanged();
     }
 
     // Interface untuk menangani klik item

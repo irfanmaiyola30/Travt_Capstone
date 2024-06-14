@@ -1,29 +1,37 @@
 package com.dicoding.travt.api;
 
+import com.dicoding.travt.account.LoginRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import java.io.IOException;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
+
 public class ApiCaller {
-    private static final String API_URL = "http://34.101.192.36:3000";
+    private static final String API_URL = "http://34.101.192.36:3000/destination";
 
     public interface ApiCallback {
         void onSuccess(ApiResponse apiResponse);
         void onFailure(IOException e);
     }
 
-    public static void fetchApiData(ApiCallback callback) {
+    // Tambahkan parameter uid ke fetchApiData
+    public static void fetchApiData(String uid, ApiCallback callback) {
         OkHttpClient client = new OkHttpClient();
 
+        // Sertakan UID di header permintaan
         Request request = new Request.Builder()
                 .url(API_URL)
+                .addHeader("Authorization", uid)  // Menambahkan UID ke header
                 .build();
 
         new Thread(() -> {
@@ -57,6 +65,8 @@ public class ApiCaller {
         int reviewsPerScore2;
         @SerializedName("city")
         public String city;
+        @SerializedName("totalRating")
+        public double totalRating;
         @SerializedName("other_hours")
         String otherHours;
         @SerializedName("rating")
@@ -73,8 +83,8 @@ public class ApiCaller {
         int reviews;
         @SerializedName("reviews_link")
         String reviewsLink;
-        @SerializedName("place_id")
-        String placeId;
+        @SerializedName("placeId")
+        public String placeId;
         @SerializedName("photos_count")
         int photosCount;
         @SerializedName("location_link")
@@ -103,6 +113,10 @@ public class ApiCaller {
         int reviewsPerScore3;
         @SerializedName("reviews_per_score_4")
         int reviewsPerScore4;
+
+        public String getName() {
+            return null;
+        }
     }
 
     public static class About {

@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.dicoding.travt"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -52,6 +52,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.0")
     implementation("androidx.activity:activity:1.8.0")
     implementation("androidx.annotation:annotation-experimental:1.4.0")
+    implementation("com.android.car.ui:car-ui-lib:2.6.0")
     testImplementation("junit:junit:4.13.2")
     implementation ("com.google.android.material:material:1.4.0")
     implementation ("androidx.cardview:cardview:1.0.0")
@@ -69,6 +70,16 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.9.3")
     implementation ("com.google.code.gson:gson:2.8.8")
     implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation ("com.github.bumptech.glide:glide:4.11.0")
+    implementation ("com.google.firebase:firebase-storage:20.0.1")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("com.android.volley:volley:1.2.1")
+    implementation ("com.google.android.material:material:1.5.0")
+
+
 
 
 }

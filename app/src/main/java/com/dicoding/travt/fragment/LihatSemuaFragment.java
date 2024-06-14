@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,10 @@ import com.dicoding.travt.R;
 import com.dicoding.travt.api.ApiCaller;
 import com.dicoding.travt.api.DataAdapter;
 import com.dicoding.travt.api.HorizontalDataAdapter;
+import com.dicoding.travt.fragment.DetailFragment;
 import com.google.common.reflect.TypeToken;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -42,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -51,66 +56,46 @@ public class LihatSemuaFragment extends Fragment {
     private TextView locationTextView;
     private Geocoder geocoder;
     private RecyclerView verticalRecyclerView;
-    private DataAdapter verticalDataAdapter; // Adapter untuk RecyclerView vertical
+    private DataAdapter verticalDataAdapter;
     private OkHttpClient client;
     private Gson gson;
-    private TextView seeAllTextView;
 
-    public LihatSemuaFragment() {
-        // Diperlukan konstruktor kosong
-    }
+    public LihatSemuaFragment() {}
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate layout untuk fragmen ini
         View rootView = inflater.inflate(R.layout.fragment_lihat_semua, container, false);
 
-        // Inisialisasi tampilan
         locationTextView = rootView.findViewById(R.id.location);
         verticalRecyclerView = rootView.findViewById(R.id.vertical_recycler_view);
         verticalRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-
-
-        // Inisialisasi Geocoder
         geocoder = new Geocoder(requireContext(), Locale.getDefault());
 
-        // Memeriksa izin lokasi
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Mendapatkan manajer lokasi
             LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
-            // Mendapatkan lokasi terakhir yang diketahui
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            // Menampilkan lokasi terakhir jika tersedia
             if (lastKnownLocation != null) {
                 displayLocation(lastKnownLocation);
             }
-            // Memperbarui lokasi secara periodik
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
         } else {
-            // Meminta izin lokasi kepada pengguna jika belum disetujui
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
-        // Inisialisasi OkHttpClient dan Gson dengan SubtypesDeserializer
         client = new OkHttpClient();
         gson = new GsonBuilder()
-                .registerTypeAdapter(new TypeToken<List<String>>(){}.getType(), new LihatSemuaFragment.SubtypesDeserializer())
+                .registerTypeAdapter(new TypeToken<List<String>>(){}.getType(), new SubtypesDeserializer())
                 .create();
 
-        // Panggil fungsi untuk mengambil data
         fetchData();
 
         return rootView;
     }
 
-
-
     private final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            // Memperbarui tampilan saat lokasi berubah
             displayLocation(location);
         }
 
@@ -126,10 +111,9 @@ public class LihatSemuaFragment extends Fragment {
 
     private void displayLocation(Location location) {
         try {
-            // Mendapatkan nama tempat dari lokasi
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
             if (addresses != null && !addresses.isEmpty()) {
-                String placeName = addresses.get(0).getLocality(); // Mendapatkan nama tempat dari alamat
+                String placeName = addresses.get(0).getLocality();
                 locationTextView.setText(placeName);
             }
         } catch (IOException e) {
@@ -142,10 +126,8 @@ public class LihatSemuaFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Izin lokasi disetujui, menginisialisasi ulang tampilan
                 requireActivity().recreate();
             } else {
-                // Izin lokasi ditolak, memberi tahu pengguna
                 Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();
             }
         }
@@ -154,19 +136,20 @@ public class LihatSemuaFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Membebaskan sumber daya jika tampilan dihancurkan
         LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
         locationManager.removeUpdates(locationListener);
     }
 
     private void fetchData() {
-        Request request = new Request.Builder()
-                .url("http://34.101.192.36:3000") // Ubah URL sesuai dengan URL API Anda
-                .build();
+        Request request =
+                new Request.Builder()
+                        .url("http://34.101.192.36:3000/destination") // Ubah URL sesuai dengan URL API Anda
+                        .build();
 
-        client.newCall(request).enqueue(new okhttp3.Callback() {
+        client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
+                // Tangani kesalahan saat permintaan gagal
                 e.printStackTrace();
             }
 
@@ -177,17 +160,46 @@ public class LihatSemuaFragment extends Fragment {
                     ApiCaller.ApiResponse apiResponse = gson.fromJson(jsonResponse, ApiCaller.ApiResponse.class);
 
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        // Membuat adapter untuk RecyclerView vertical
-                        verticalDataAdapter = new DataAdapter(getContext(), apiResponse.dataList);
-                        verticalRecyclerView.setAdapter(verticalDataAdapter);
+                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                        if (currentUser != null) {
+                            String uid = currentUser.getUid();
 
+                            // Set vertical and horizontal adapters with data
+                            verticalDataAdapter = new DataAdapter(getContext(), apiResponse.dataList);
+                            verticalRecyclerView.setAdapter(verticalDataAdapter);
+                            verticalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
+
+                        } else {
+                            Log.d("onResponse", "User not logged in");
+                        }
                     });
                 }
             }
+
+            private void openDetailFragment(ApiCaller.Data item, String uid) {
+                // Pass data to DetailFragment
+                Bundle bundle = new Bundle();
+                bundle.putString("placeId", item.placeId);
+                bundle.putString("name", item.name);
+                bundle.putString("city", item.city);
+                bundle.putString("description", item.description);
+                bundle.putDouble("rating", item.rating);
+                bundle.putString("photo", item.photo);
+                bundle.putDouble("totalRating", item.totalRating);
+
+                DetailFragment detailFragment = new DetailFragment();
+                detailFragment.setArguments(bundle);
+
+                // Open DetailFragment
+                FragmentTransaction transaction = requireFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, detailFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
         });
     }
-    // Inner class for deserializing subtypes field
-    class SubtypesDeserializer implements JsonDeserializer<List<String>> {
+
+    static class SubtypesDeserializer implements JsonDeserializer<List<String>> {
         @Override
         public List<String> deserialize(JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) throws JsonParseException {
             List<String> subtypes = new ArrayList<>();
@@ -202,6 +214,3 @@ public class LihatSemuaFragment extends Fragment {
         }
     }
 }
-
-// Inner class for deserial
-

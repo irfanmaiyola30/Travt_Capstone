@@ -1,94 +1,212 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.ProfileFragment">
+    tools:context=".fragment.ProfileFragment"
+    tools:ignore="RtlHardcoded">
 
-    <ImageView
-        android:id="@+id/avatarImageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="32dp"
-        android:contentDescription="User Avatar"
-        android:src="@drawable/logo_travt"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/usernameTextView"
-        android:layout_width="189dp"
-        android:layout_height="49dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
-        android:text="Ahmad Jaya Raya"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/cardView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:gravity="left|top"
+        android:orientation="vertical"
+        android:paddingLeft="18dp"
+        android:paddingTop="45dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_width="300dp"
+            android:layout_height="82dp"
+            android:gravity="left|center_vertical"
+            android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/changePasswordButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Change Password" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="82dp"
+                android:layout_height="82dp"
+                android:src="@drawable/profil"
+                android:scaleType="centerCrop" />
 
-            <Button
-                android:id="@+id/historyReviewButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="History Review" />
-
-            <Button
-                android:id="@+id/bantuanButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Bantuan" />
-
-            <Button
-                android:id="@+id/faqButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="FAQ" />
-
-            <Button
-                android:id="@+id/logoutButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Log Out" />
-
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="27dp"
+                android:layout_marginLeft="22dp"
+                android:gravity="left|center_vertical"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="Irfan Maiyola"
+                android:textColor="#FF000000"
+                android:textSize="21sp" />
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+        <FrameLayout
+            android:id="@+id/container_group8"
+            android:layout_width="323dp"
+            android:layout_height="169dp"
+            android:layout_marginTop="31dp"
+            android:layout_gravity="left">
 
+            <LinearLayout
+                android:id="@+id/container_profile_tab"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:gravity="left|top"
+                android:orientation="vertical"
+                android:paddingTop="2.5dp"
+                tools:ignore="UselessParent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="23dp"
+                    android:layout_marginTop="-2.5dp"
+                    android:layout_marginBottom="-2.5dp"
+                    android:gravity="left|center_vertical"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:text="Account Setting"
+                    android:textColor="#FF000000"
+                    android:textSize="18sp" />
 
+                <LinearLayout
+                    android:id="@+id/container_frame12"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/shape"
+                    android:gravity="left|center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/img_user_circle"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/profil_icon" />
+
+                    <LinearLayout
+                        android:id="@+id/container_frame14"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="-1dp"
+                        android:layout_marginBottom="-1dp"
+                        android:layout_weight="1"
+                        android:gravity="left|top"
+                        android:orientation="vertical"
+                        android:paddingBottom="1dp"
+                        android:paddingTop="1dp">
+
+                        <TextView
+                            android:id="@+id/text_edit_profile"
+                            android:layout_width="187dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="-1dp"
+                            android:layout_marginBottom="-1dp"
+                            android:gravity="left|center_vertical"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:text="Edit Profile"
+                            android:textColor="#FF000000"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/img_chevron_right"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/right" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/container_frame17"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/shape"
+                    android:gravity="left|center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/img_translate"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/password_icon" />
+
+                    <LinearLayout
+                        android:id="@+id/container_frame19"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:gravity="left|top"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/text_change_password"
+                            android:layout_width="189dp"
+                            android:layout_height="18dp"
+                            android:gravity="left|center_vertical"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:text="Change Password"
+                            android:textColor="#FF000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/img_chevron_right_password"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/right" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/logout"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="310dp"
+            android:layout_gravity="left"
+            android:background="@drawable/bg_logout"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="19dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="19dp">
+
+            <TextView
+                android:id="@+id/text_logout"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:gravity="left|center_vertical"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="Log out"
+                android:textColor="#FFFFFFFF"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

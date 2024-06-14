@@ -8,7 +8,7 @@ public class Favorite {
     private String photo;
 
     // Default constructor required for calls to DataSnapshot.getValue(Favorite.class)
-    public Favorite() {
+    public Favorite(String name, String city, double rating, String description) {
     }
 
     // Constructor with parameters
