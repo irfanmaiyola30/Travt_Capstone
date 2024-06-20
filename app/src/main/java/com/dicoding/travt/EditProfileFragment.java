@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +33,9 @@ import com.google.firebase.storage.UploadTask;
 import java.util.UUID;
 
 public class EditProfileFragment extends Fragment {
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private StorageReference storageReference;
 
     private EditText usernameEditText, birthEditText, phoneEditText;
     private Button updateButton;
@@ -41,12 +45,14 @@ public class EditProfileFragment extends Fragment {
     private Uri imageUri;
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private StorageReference storageReference;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        storageReference = FirebaseStorage.getInstance().getReference("profile_images");
 
         // Initialize views
         usernameEditText = view.findViewById(R.id.profile_username);
@@ -54,6 +60,8 @@ public class EditProfileFragment extends Fragment {
         phoneEditText = view.findViewById(R.id.profile_phone);
         updateButton = view.findViewById(R.id.profle_update_btn);
         profileImageView = view.findViewById(R.id.profile_image_view);
+
+        loadUserProfile();
 
         // Initialize Firebase components
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -109,6 +117,15 @@ public class EditProfileFragment extends Fragment {
 
         return view;
     }
+    private void loadUserProfile() {
+        if (user != null) {
+            usernameEditText.setText(user.getDisplayName());
+            phoneEditText.setText(user.getPhoneNumber());
+            if (user.getPhotoUrl() != null) {
+                Glide.with(this).load(user.getPhotoUrl()).into(profileImageView);
+            }
+        }
+    }
 
     private void openFileChooser() {
         Intent intent = new Intent();
@@ -158,6 +175,7 @@ public class EditProfileFragment extends Fragment {
                                                     Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
                                                     // Navigate back to ProfileFragment
                                                     getParentFragmentManager().popBackStack();
+                                                    loadUserProfile();
                                                 } else {
                                                     Toast.makeText(getActivity(), "Profile update failed", Toast.LENGTH_SHORT).show();
                                                 }

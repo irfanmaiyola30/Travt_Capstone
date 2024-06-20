@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -53,6 +54,8 @@ dependencies {
     implementation("androidx.activity:activity:1.8.0")
     implementation("androidx.annotation:annotation-experimental:1.4.0")
     implementation("com.android.car.ui:car-ui-lib:2.6.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
     testImplementation("junit:junit:4.13.2")
     implementation ("com.google.android.material:material:1.4.0")
     implementation ("androidx.cardview:cardview:1.0.0")
@@ -78,6 +81,8 @@ dependencies {
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.android.volley:volley:1.2.1")
     implementation ("com.google.android.material:material:1.5.0")
+    implementation ("com.google.maps:google-maps-services:0.9.3")
+
 
 
 

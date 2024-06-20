@@ -57,15 +57,13 @@ public class PopulerFragment extends Fragment {
     private TextView locationTextView;
     private Geocoder geocoder;
     private RecyclerView verticalRecyclerView;
-    private RecyclerView horizontalRecyclerView; // RecyclerView untuk menampilkan data horizontal
     private DataAdapter verticalDataAdapter; // Adapter untuk RecyclerView vertical
-    private HorizontalDataAdapter horizontalDataAdapter; // Adapter untuk RecyclerView horizontal
     private OkHttpClient client;
     private Gson gson;
     private TextView seeAllTextView;
     private TextView allTextView;
     private TextView PopulerTextView;
-    private TextView RecomemendedTextView;
+
 
     public PopulerFragment() {
         // Diperlukan konstruktor kosong
@@ -80,13 +78,11 @@ public class PopulerFragment extends Fragment {
         // Inisialisasi tampilan
         locationTextView = rootView.findViewById(R.id.location);
         PopulerTextView =rootView.findViewById(R.id.tab_populer);
-        RecomemendedTextView = rootView.findViewById(R.id.tab_recomended);
         seeAllTextView = rootView.findViewById(R.id.see_all);
         allTextView = rootView.findViewById(R.id.tab_all);
         verticalRecyclerView = rootView.findViewById(R.id.vertical_recycler_view);
-        horizontalRecyclerView = rootView.findViewById(R.id.horizontal_recycler_view); // Inisialisasi RecyclerView horizontal
+
         verticalRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        horizontalRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)); // Mengatur layout horizontal
 
         // Atur click listener untuk see_all TextView
         seeAllTextView.setOnClickListener(new View.OnClickListener() {
@@ -113,18 +109,7 @@ public class PopulerFragment extends Fragment {
                 transaction.commit();
             }
         });
-        RecomemendedTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Tambahkan aksi yang diinginkan ketika see_all TextView diklik
-                // Misalnya, buka aktivitas atau tampilkan fragmen lain
-                // Contoh: Buka fragment baru
-                FragmentTransaction transaction = requireFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, new RecomendedFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
+
         allTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -251,9 +236,6 @@ public class PopulerFragment extends Fragment {
                             verticalRecyclerView.setAdapter(verticalDataAdapter);
                             verticalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
 
-                            horizontalDataAdapter = new HorizontalDataAdapter(getContext(), apiResponse.dataList);
-                            horizontalRecyclerView.setAdapter(horizontalDataAdapter);
-                            horizontalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
                         } else {
                             Log.d("onResponse", "User not logged in");
                         }

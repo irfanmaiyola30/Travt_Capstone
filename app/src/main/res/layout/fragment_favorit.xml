@@ -1,81 +1,69 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FFFFFFFF"
-    android:clipChildren="false"
-    android:clipToPadding="false"
-    android:orientation="vertical"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#FF2567E8"
-        android:paddingTop="21dp"
-        android:paddingBottom="-2dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:fillViewport="true">
+        android:layout_height="match_parent">
+
+        <!-- Konten -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Your Location -->
+            <TextView
+                android:id="@+id/your_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/blue"
+                android:text="Favorite"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Lokasi dan Info Pengguna -->
+
+
+
+
+            <!-- Header Daftar Vertikal -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="96dp"
-                android:layout_marginHorizontal="19dp"
-                android:orientation="horizontal">
-                <ImageView
-                    android:id="@+id/back"
-                    android:layout_width="15dp"
-                    android:layout_height="8dp"
-                    android:layout_marginEnd="29dp"
-                    android:src="@drawable/ic_back"
-                    android:scaleType="fitXY"
-                    />
+                android:paddingBottom="16dp">
+
                 <TextView
-                    android:textColor="#FEFEFE"
-                    android:textSize="20sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:layout_weight="1"
-                    android:text="Favorite Places"
-                    />
+                    android:text=""
+                    android:textStyle="bold"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/see_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/blue" />
             </LinearLayout>
-            <LinearLayout
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_favorite"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/shape_1"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:paddingTop="7dp"
-                android:paddingBottom="115dp"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="vertical">
+                android:paddingBottom="115dp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_favorite"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="115dp"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:background="@drawable/shape_1"/>
-
-                <RelativeLayout
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginHorizontal="24dp"
-                    >
-                </RelativeLayout>
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+
+</RelativeLayout>

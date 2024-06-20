@@ -17,7 +17,7 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public class ApiCaller {
-    private static final String API_URL = "http://34.101.192.36:3000/destination";
+    private static final String API_URL = "https://travt-backend-api-7ycttqjnva-et.a.run.app/destination";
 
     public interface ApiCallback {
         void onSuccess(ApiResponse apiResponse);
@@ -89,6 +89,8 @@ public class ApiCaller {
         int photosCount;
         @SerializedName("location_link")
         String locationLink;
+        @SerializedName("rating_user")
+        public double rating_user;
         @SerializedName("business_status")
         String businessStatus;
         @SerializedName("verified")
@@ -104,6 +106,7 @@ public class ApiCaller {
         @SerializedName("name")
         public String name;
         @SerializedName("location")
+        public
         Location location;
         @SerializedName("category")
         public String category;
@@ -222,8 +225,8 @@ public class ApiCaller {
 
     public static class Location {
         @SerializedName("_latitude")
-        double latitude;
+        public double latitude;
         @SerializedName("_longitude")
-        double longitude;
+        public double longitude;
     }
 }

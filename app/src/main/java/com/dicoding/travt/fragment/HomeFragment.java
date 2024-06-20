@@ -46,10 +46,13 @@ import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -67,7 +70,7 @@ public class HomeFragment extends Fragment {
     private TextView seeAllTextView;
     private TextView allTextView;
     private TextView PopulerTextView;
-    private TextView RecomemendedTextView;
+    private Location currentUserLocation;
 
     public HomeFragment() {
         // Diperlukan konstruktor kosong
@@ -76,13 +79,19 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inisialisasi OkHttpClient dan Gson dengan SubtypesDeserializer
+        client = new OkHttpClient();
+        gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<List<String>>() {
+                }.getType(), new SubtypesDeserializer())
+                .create();
+
         // Inflate layout untuk fragmen ini
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Inisialisasi tampilan
         locationTextView = rootView.findViewById(R.id.location);
         PopulerTextView = rootView.findViewById(R.id.tab_populer);
-        RecomemendedTextView = rootView.findViewById(R.id.tab_recomended);
         seeAllTextView = rootView.findViewById(R.id.see_all);
         allTextView = rootView.findViewById(R.id.tab_all);
         verticalRecyclerView = rootView.findViewById(R.id.vertical_recycler_view);
@@ -103,6 +112,7 @@ public class HomeFragment extends Fragment {
                 transaction.commit();
             }
         });
+
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -120,36 +130,21 @@ public class HomeFragment extends Fragment {
         } else {
             // Tangani kasus di mana pengguna tidak login
         }
+
         PopulerTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Tambahkan aksi yang diinginkan ketika see_all TextView diklik
-                // Misalnya, buka aktivitas atau tampilkan fragmen lain
-                // Contoh: Buka fragment baru
                 FragmentTransaction transaction = requireFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, new PopulerFragment());
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
         });
-        RecomemendedTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Tambahkan aksi yang diinginkan ketika see_all TextView diklik
-                // Misalnya, buka aktivitas atau tampilkan fragmen lain
-                // Contoh: Buka fragment baru
-                FragmentTransaction transaction = requireFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, new RecomendedFragment());
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
+
+
         allTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Tambahkan aksi yang diinginkan ketika see_all TextView diklik
-                // Misalnya, buka aktivitas atau tampilkan fragmen lain
-                // Contoh: Buka fragment baru
                 FragmentTransaction transaction = requireFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, new AllFragment());
                 transaction.addToBackStack(null);
@@ -169,6 +164,8 @@ public class HomeFragment extends Fragment {
             // Menampilkan lokasi terakhir jika tersedia
             if (lastKnownLocation != null) {
                 displayLocation(lastKnownLocation);
+                currentUserLocation = lastKnownLocation;
+                fetchData();
             }
             // Memperbarui lokasi secara periodik
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
@@ -176,16 +173,6 @@ public class HomeFragment extends Fragment {
             // Meminta izin jika lokasi belum di setujui
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
-
-        // Inisialisasi OkHttpClient dan Gson dengan SubtypesDeserializer
-        client = new OkHttpClient();
-        gson = new GsonBuilder()
-                .registerTypeAdapter(new TypeToken<List<String>>() {
-                }.getType(), new LihatSemuaFragment.SubtypesDeserializer())
-                .create();
-
-        // Panggil fungsi untuk mengambil data
-        fetchData();
 
         return rootView;
     }
@@ -195,6 +182,8 @@ public class HomeFragment extends Fragment {
         public void onLocationChanged(Location location) {
             // Memperbarui tampilan saat lokasi berubah
             displayLocation(location);
+            currentUserLocation = location;
+            fetchData();
         }
 
         @Override
@@ -242,16 +231,85 @@ public class HomeFragment extends Fragment {
         super.onDestroyView();
         // Membebaskan sumber daya jika tampilan dihancurkan
         LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.removeUpdates(locationListener);
+        if (locationManager != null) {
+            locationManager.removeUpdates(locationListener);
+        }
     }
 
     private void fetchData() {
-        Request request =
-                new Request.Builder()
-                        .url("http://34.101.192.36:3000/destination") // Ubah URL sesuai dengan URL API Anda
-                        .build();
+        if (client == null) {
+            Log.e("fetchData", "OkHttpClient not initialized");
+            return;
+        }
+        if (currentUserLocation == null) {
+            Log.e("fetchData", "Current user location not available");
+            return;
+        }
 
-        client.newCall(request).enqueue(new Callback() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Log.d("fetchData", "User not logged in");
+            return;
+        }
+
+        String uid = currentUser.getUid();
+
+        // Endpoint untuk adapter horizontal dengan query uid
+        HttpUrl.Builder horizontalUrlBuilder = HttpUrl.parse("http://34.101.192.36:3000/recommendation").newBuilder();
+        horizontalUrlBuilder.addQueryParameter("uid", uid);
+        String horizontalUrl = horizontalUrlBuilder.build().toString();
+
+        Request horizontalRequest = new Request.Builder()
+                .url(horizontalUrl)
+                .build();
+
+        client.newCall(horizontalRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                // Tangani kesalahan saat permintaan gagal
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String jsonResponse = response.body().string();
+                    ApiCaller.ApiResponse apiResponse = gson.fromJson(jsonResponse, ApiCaller.ApiResponse.class);
+
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        // Mengurutkan data berdasarkan jarak terdekat untuk adapter horizontal
+                        List<ApiCaller.Data> sortedDataList = new ArrayList<>(apiResponse.dataList);
+                        Collections.sort(sortedDataList, new Comparator<ApiCaller.Data>() {
+                            @Override
+                            public int compare(ApiCaller.Data d1, ApiCaller.Data d2) {
+                                float[] results1 = new float[1];
+                                Location.distanceBetween(currentUserLocation.getLatitude(), currentUserLocation.getLongitude(), d1.location.latitude, d1.location.longitude, results1);
+                                float distance1 = results1[0];
+
+                                float[] results2 = new float[1];
+                                Location.distanceBetween(currentUserLocation.getLatitude(), currentUserLocation.getLongitude(), d2.location.latitude, d2.location.longitude, results2);
+                                float distance2 = results2[0];
+
+                                return Float.compare(distance1, distance2);
+                            }
+                        });
+
+                        // Set adapter horizontal dengan data yang sudah diurutkan
+                        horizontalDataAdapter = new HorizontalDataAdapter(getContext(), apiResponse.dataList);
+                        horizontalRecyclerView.setAdapter(horizontalDataAdapter);
+                        horizontalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
+                    });
+                }
+            }
+        });
+
+        // Endpoint untuk adapter vertikal
+        String verticalUrl = "http://34.101.192.36:3000/destination";
+        Request verticalRequest = new Request.Builder()
+                .url(verticalUrl)
+                .build();
+
+        client.newCall(verticalRequest).enqueue(new Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
                 // Tangani kesalahan saat permintaan gagal
@@ -268,59 +326,74 @@ public class HomeFragment extends Fragment {
                         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                         if (currentUser != null) {
                             String uid = currentUser.getUid();
+                            List<ApiCaller.Data> sortedDataList = new ArrayList<>(apiResponse.dataList);
+                            Collections.sort(sortedDataList, new Comparator<ApiCaller.Data>() {
+                                @Override
+                                public int compare(ApiCaller.Data d1, ApiCaller.Data d2) {
+                                    float[] results1 = new float[1];
+                                    Location.distanceBetween(currentUserLocation.getLatitude(), currentUserLocation.getLongitude(), d1.location.latitude, d1.location.longitude, results1);
+                                    float distance1 = results1[0];
 
-                            // Set vertical and horizontal adapters with data
-                            verticalDataAdapter = new DataAdapter(getContext(), apiResponse.dataList);
-                            verticalRecyclerView.setAdapter(verticalDataAdapter);
-                            verticalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
+                                    float[] results2 = new float[1];
+                                    Location.distanceBetween(currentUserLocation.getLatitude(), currentUserLocation.getLongitude(), d2.location.latitude, d2.location.longitude, results2);
+                                    float distance2 = results2[0];
 
-                            horizontalDataAdapter = new HorizontalDataAdapter(getContext(), apiResponse.dataList);
-                            horizontalRecyclerView.setAdapter(horizontalDataAdapter);
-                            horizontalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
+                                    return Float.compare(distance1, distance2);
+                                }
+                            });
+
+                            // Set adapter vertikal hanya jika belum diinisialisasi
+                            if (verticalDataAdapter == null) {
+                                verticalDataAdapter = new DataAdapter(getContext(),sortedDataList);
+                                verticalRecyclerView.setAdapter(verticalDataAdapter);
+                                verticalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
+                            }
                         } else {
                             Log.d("onResponse", "User not logged in");
                         }
                     });
                 }
             }
-
-            private void openDetailFragment(ApiCaller.Data item, String uid) {
-                // Pass data to DetailFragment
-                Bundle bundle = new Bundle();
-                bundle.putString("placeId", item.placeId);
-                bundle.putString("name", item.name);
-                bundle.putString("city", item.city);
-                bundle.putString("description", item.description);
-                bundle.putDouble("rating", item.rating);
-                bundle.putString("photo", item.photo);
-                bundle.putDouble("totalRating", item.totalRating);
-
-                DetailFragment detailFragment = new DetailFragment();
-                detailFragment.setArguments(bundle);
-
-                // Open DetailFragment
-                FragmentTransaction transaction = requireFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, detailFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
         });
     }
 
+    private void openDetailFragment(ApiCaller.Data item, String uid) {
+        // Pass data to DetailFragment
+        Bundle bundle = new Bundle();
+        bundle.putString("placeId", item.placeId);
+        bundle.putString("name", item.name);
+        bundle.putString("city", item.city);
+        bundle.putString("description", item.description);
+        bundle.putDouble("rating", item.rating);
+        bundle.putDouble("ratting", item.rating);
+        bundle.putString("photo", item.photo);
+        bundle.putDouble("totalRating", item.totalRating);
+
+        DetailFragment detailFragment = new DetailFragment();
+        detailFragment.setArguments(bundle);
+
+        // Open DetailFragment
+        FragmentTransaction transaction = requireFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, detailFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+
 
     // Inner class for deserializing subtypes field
-            class SubtypesDeserializer implements JsonDeserializer<List<String>> {
-                @Override
-                public List<String> deserialize(JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) throws JsonParseException {
-                    List<String> subtypes = new ArrayList<>();
-                    if (json.isJsonArray()) {
-                        for (JsonElement element : json.getAsJsonArray()) {
-                            subtypes.add(element.getAsString());
-                        }
-                    } else if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
-                        subtypes.add(json.getAsString());
-                    }
-                    return subtypes;
+    class SubtypesDeserializer implements JsonDeserializer<List<String>> {
+        @Override
+        public List<String> deserialize(JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) throws JsonParseException {
+            List<String> subtypes = new ArrayList<>();
+            if (json.isJsonArray()) {
+                for (JsonElement element : json.getAsJsonArray()) {
+                    subtypes.add(element.getAsString());
                 }
+            } else if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
+                subtypes.add(json.getAsString());
             }
+            return subtypes;
+        }
     }
+}

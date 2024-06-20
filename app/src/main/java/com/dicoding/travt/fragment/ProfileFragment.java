@@ -21,6 +21,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.dicoding.travt.ChangePasswordFragment;
 import com.dicoding.travt.EditProfileFragment;
+import com.dicoding.travt.HistoryFragment;
+import com.dicoding.travt.MainActivity;
 import com.dicoding.travt.R;
 import com.dicoding.travt.account.loginActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,6 +47,8 @@ public class ProfileFragment extends Fragment {
     private TextView username;
     private LinearLayout editProfileLayout;
     private LinearLayout changePasswordLayout;
+
+    private LinearLayout history;
     private LinearLayout logoutLayout;
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -60,6 +64,7 @@ public class ProfileFragment extends Fragment {
 
         profileImage = view.findViewById(R.id.profile_image);
         username = view.findViewById(R.id.username);
+        history = view.findViewById(R.id.historyButton);
         editProfileLayout = view.findViewById(R.id.container_frame12);
         changePasswordLayout = view.findViewById(R.id.container_frame17);
         logoutLayout = view.findViewById(R.id.logout);
@@ -92,6 +97,17 @@ public class ProfileFragment extends Fragment {
                 FragmentManager fragmentManager = getParentFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.container, new ChangePasswordFragment());
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to ChangePasswordFragment
+                FragmentManager fragmentManager = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.container, new HistoryFragment());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }

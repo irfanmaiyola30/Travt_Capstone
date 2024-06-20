@@ -122,16 +122,6 @@
                 android:layout_marginTop="16dp"
                 android:text="Register" />
             <!-- Tambahkan ImageView disini -->
-            <ImageView
-                android:id="@+id/googleDrawable"
-                android:layout_width="match_parent"
-                android:layout_marginTop="15dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="25dp"
-
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:src="@drawable/or1" />
 
 
 

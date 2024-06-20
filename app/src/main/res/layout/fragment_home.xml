@@ -102,21 +102,15 @@
                         android:focusable="true" />
 
                     <!-- Tab Recomended -->
-                    <TextView
-                        android:id="@+id/tab_recomended"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="Recomended"
-                        android:textColor="@color/blue"
-                        android:textStyle="bold"
-                        android:background="@drawable/rounded_search"
-                        android:clickable="true"
-                        android:focusable="true" />
+
                 </LinearLayout>
             </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recomended"
+                android:textStyle="bold"
+                android:layout_weight="1" />
 
             <!-- Horizontal RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView

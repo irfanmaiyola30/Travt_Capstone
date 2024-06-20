@@ -50,7 +50,6 @@ public class loginActivity extends AppCompatActivity {
         initView();
         keRegis();
         loginn();
-        sendCredentialsToServer();
         setupForgotPassword();
     }
 
@@ -188,7 +187,7 @@ public class loginActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(loginActivity.this, "Login gagal. Periksa kembali email atau password Anda.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(loginActivity.this, "", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

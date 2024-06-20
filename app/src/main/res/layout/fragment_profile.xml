@@ -45,7 +45,7 @@
         <FrameLayout
             android:id="@+id/container_group8"
             android:layout_width="323dp"
-            android:layout_height="169dp"
+            android:layout_height="300dp"
             android:layout_marginTop="31dp"
             android:layout_gravity="left">
 
@@ -92,6 +92,7 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/profil_icon" />
 
+
                     <LinearLayout
                         android:id="@+id/container_frame14"
                         android:layout_width="0dp"
@@ -128,11 +129,68 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/right" />
                 </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/historyButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/shape"
+                    android:gravity="left|center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/img_user_rcle"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/profil_icon" />
+
+
+                    <LinearLayout
+                        android:id="@+id/container_ame14"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="-1dp"
+                        android:layout_marginBottom="-1dp"
+                        android:layout_weight="1"
+                        android:gravity="left|top"
+                        android:orientation="vertical"
+                        android:paddingBottom="1dp"
+                        android:paddingTop="1dp">
+
+                        <TextView
+                            android:id="@+id/history"
+                            android:layout_width="187dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="-1dp"
+                            android:layout_marginBottom="-1dp"
+                            android:gravity="left|center_vertical"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:text="History"
+                            android:textColor="#FF000000"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/img_chevron_ght"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/right" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/container_frame17"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="65dp"
                     android:layout_marginTop="15dp"
                     android:background="@drawable/shape"
                     android:gravity="left|center_vertical"
@@ -178,7 +236,11 @@
                         android:layout_marginLeft="10dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/right" />
+
+
                 </LinearLayout>
+
+
             </LinearLayout>
         </FrameLayout>
 

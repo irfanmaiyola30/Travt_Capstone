@@ -223,15 +223,23 @@ public class RecomendedFragment extends Fragment {
     }
 
     private void fetchData() {
-        Request request =
-                new Request.Builder()
-                        .url("http://34.101.192.36:3000/destination") // Ubah URL sesuai dengan URL API Anda
-                        .build();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Log.d("fetchData", "Pengguna tidak masuk");
+            return;
+        }
+
+        String uid = currentUser.getUid();
+        String url = "http://34.101.192.36:3000/recommendation?uid=" + uid; // Mengasumsikan uid dikirim sebagai parameter query
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                // Tangani kesalahan saat permintaan gagal
+                // Tangani kegagalan permintaan
                 e.printStackTrace();
             }
 
@@ -242,24 +250,18 @@ public class RecomendedFragment extends Fragment {
                     ApiCaller.ApiResponse apiResponse = gson.fromJson(jsonResponse, ApiCaller.ApiResponse.class);
 
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                        if (currentUser != null) {
-                            String uid = currentUser.getUid();
+                        // Setel adapter vertikal dan horizontal dengan data
+                        verticalDataAdapter = new DataAdapter(getContext(), apiResponse.dataList);
+                        verticalRecyclerView.setAdapter(verticalDataAdapter);
+                        verticalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
 
-                            // Set vertical and horizontal adapters with data
-                            verticalDataAdapter = new DataAdapter(getContext(), apiResponse.dataList);
-                            verticalRecyclerView.setAdapter(verticalDataAdapter);
-                            verticalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
-
-                            horizontalDataAdapter = new HorizontalDataAdapter(getContext(), apiResponse.dataList);
-                            horizontalRecyclerView.setAdapter(horizontalDataAdapter);
-                            horizontalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
-                        } else {
-                            Log.d("onResponse", "User not logged in");
-                        }
+                        horizontalDataAdapter = new HorizontalDataAdapter(getContext(), apiResponse.dataList);
+                        horizontalRecyclerView.setAdapter(horizontalDataAdapter);
+                        horizontalDataAdapter.setOnItemClickListener(item -> openDetailFragment(item, uid));
                     });
                 }
             }
+
 
             private void openDetailFragment(ApiCaller.Data item, String uid) {
                 // Pass data to DetailFragment
