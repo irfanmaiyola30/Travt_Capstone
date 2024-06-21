@@ -17,7 +17,7 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public class ApiCaller {
-    private static final String API_URL = "https://travt-backend-api-7ycttqjnva-et.a.run.app/destination";
+    private static final String API_URL = "http://34.101.192.36:3000/destination";
 
     public interface ApiCallback {
         void onSuccess(ApiResponse apiResponse);
