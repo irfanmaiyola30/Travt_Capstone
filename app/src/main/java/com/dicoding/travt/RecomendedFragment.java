@@ -230,7 +230,7 @@ public class RecomendedFragment extends Fragment {
         }
 
         String uid = currentUser.getUid();
-        String url = "http://34.101.192.36:3000/recommendation?uid=" + uid; // Mengasumsikan uid dikirim sebagai parameter query
+        String url = "https://travt-api-backend-7ycttqjnva-et.a.run.app/recommendation?uid=" + uid; // Mengasumsikan uid dikirim sebagai parameter query
 
         Request request = new Request.Builder()
                 .url(url)

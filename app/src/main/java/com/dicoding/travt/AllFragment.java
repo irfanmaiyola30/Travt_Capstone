@@ -238,7 +238,7 @@ public class AllFragment extends Fragment {
     private void fetchData() {
         Request request =
                 new Request.Builder()
-                        .url("http://34.101.192.36:3000/destination") // Ubah URL sesuai dengan URL API Anda
+                        .url("https://travt-api-backend-7ycttqjnva-et.a.run.app/destination") // Ubah URL sesuai dengan URL API Anda
                         .build();
 
         client.newCall(request).enqueue(new Callback() {

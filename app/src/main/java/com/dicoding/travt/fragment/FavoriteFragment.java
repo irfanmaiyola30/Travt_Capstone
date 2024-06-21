@@ -73,7 +73,7 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.OnItem
     }
 
     private void fetchFavoriteItems(String userId) {
-        String apiUrl = "http://34.101.192.36:3000/favorite?uid=" + userId;
+        String apiUrl = "https://travt-api-backend-7ycttqjnva-et.a.run.app/favorite?uid=" + userId;
 
         new Thread(() -> {
             try {

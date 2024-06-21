@@ -223,7 +223,7 @@ public class DetailFragment extends Fragment {
         }
 
         String userId = user.getUid();
-        String url = "http://34.101.192.36:3000/destination/" + placeId + "/review/create?uid=" + userId;
+        String url = "https://travt-api-backend-7ycttqjnva-et.a.run.app/destination/" + placeId + "/review/create?uid=" + userId;
 
         JSONObject jsonBody = new JSONObject();
         try {
@@ -275,7 +275,7 @@ public class DetailFragment extends Fragment {
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                URL url = new URL("http://34.101.192.36:3000/favorite?uid=" + userId);
+                URL url = new URL("https://travt-api-backend-7ycttqjnva-et.a.run.app/favorite?uid=" + userId);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
 
@@ -347,7 +347,7 @@ public class DetailFragment extends Fragment {
         protected Boolean doInBackground(Void... voids) {
             HttpURLConnection connection = null;
             try {
-                String urlString = "http://34.101.192.36:3000/destination/" + placeId + "/favorite?uid=" + userId;
+                String urlString = "https://travt-api-backend-7ycttqjnva-et.a.run.app/destination/" + placeId + "/favorite?uid=" + userId;
                 URL url = new URL(urlString);
                 connection = (HttpURLConnection) url.openConnection();
 

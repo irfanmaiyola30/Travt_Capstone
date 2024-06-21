@@ -99,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void fetchCoordinatesFromApi(String placeId, String userId, LatLng currentLocation) {
         // API endpoint to fetch coordinates based on placeId and userId
-        String apiUrl = "http://34.101.192.36:3000/destination/" + placeId + "?uid=" + userId;
+        String apiUrl = "https://travt-api-backend-7ycttqjnva-et.a.run.app/destination/" + placeId + "?uid=" + userId;
 
         // Volley request to fetch data from API
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, apiUrl, null,
