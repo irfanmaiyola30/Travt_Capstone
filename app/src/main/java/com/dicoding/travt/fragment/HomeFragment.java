@@ -254,14 +254,13 @@ public class HomeFragment extends Fragment {
 
         String uid = currentUser.getUid();
 
-        // Endpoint untuk adapter horizontal dengan query uid
-        HttpUrl.Builder horizontalUrlBuilder = HttpUrl.parse("http://34.101.192.36:3000/recommendation").newBuilder();
-        horizontalUrlBuilder.addQueryParameter("uid", uid);
-        String horizontalUrl = horizontalUrlBuilder.build().toString();
+// Endpoint untuk adapter horizontal dengan query uid
+        String apiUrl = "https://travt-api-backend-7ycttqjnva-et.a.run.app/recommendation?uid=" + uid;
 
         Request horizontalRequest = new Request.Builder()
-                .url(horizontalUrl)
+                .url(apiUrl)
                 .build();
+
 
         client.newCall(horizontalRequest).enqueue(new Callback() {
             @Override
